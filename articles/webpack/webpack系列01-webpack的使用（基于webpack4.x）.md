@@ -178,24 +178,6 @@ module: {
 module: {
     rules: [
         {
-            test: /\.css$/,
-            use: [
-                'style-loader',
-                'css-loader'
-            ]
-        },
-        {
-            test: /\.(png|svg|jpg|gif)$/,
-            use: [{
-                'url-loader',
-                options: {
-                    limit: 8192,             // 小于8k的图片自动转成base64格式
-                    outputPath: 'images/'   // 图片打包后存放的目录
-                }
-
-            }]
-        },
-        {
             test: /\.(woff|woff2|eot|ttf|otf)$/,
             use: [
             'file-loader'
@@ -206,6 +188,108 @@ module: {
     
 ```
 
+## webpack插件
+
+webpack提供了各种各样的插件，下面介绍几种常用的插件，只试过在webpack4.0以上的版本，其他版本没试过，所以如果有报错，那可能是版本不支持
+
+使用webpack插件，我们要写在配置中的plugins里面，在使用插件之前，我们都需要先安装该插件。下面介绍几个常用的插件
+
+#### html-webpack-plugin 创建 HTML 文件
+改插件的作用为：生成html页面，自动引入js文件,自动消除src引入的缓存问题，上线之前压缩，配置minify压缩代码,生成的HTML文件引入各自的JS文件配置
+首先安装该插件`npm install html-webpack-plugin --save -dev`;
+```javascript
+let HtmlWebpackPlugin = require('html-webpack-plugin');
+module: {
+    ...
+    plugins:[
+        new HtmlWebpakPlugin({
+            minify:{
+                collapseWhitespace: true,   // 折叠空白区域 也就是压缩代码
+                removeAttributeQuotes: true // 移除双引号，
+            },
+            hash:true, //向html引入的src链接后面增加一段hash值,消除缓存
+            template:'./src/index.html', // 模板地址
+            title: 'webpack' // 标题
+        })
+    ]
+}
+```
+关于该插件的更多使用方法，可以看(这里)[https://github.com/jantimon/html-webpack-plugin#options]
+
+#### extract-text-webpack-plugin 拆分单独的css
+安装`npm i extract-text-webpack-plugin@next --save -dev`，其中@next表示可以在webpack4中使用
+```javascript
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+            fallback: "style-loader",
+          use: "css-loader"
+        })
+      }
+    ]
+  },
+  plugins: [
+      new ExtractTextPlugin("css/styles.css"), // 打包后的css文件
+  ]
+}
+```
+关于该插件的更多使用方法，可以看(这里)[https://www.webpackjs.com/plugins/extract-text-webpack-plugin/]
+
+
+#### 添加css3前缀
+网上很多的教程都是利用postcss中的autoprefixer，但它会有一个问题，就是你不得不维护一个postcss.config.js。或者是直接在webpack.config.js的 module.rules的  postcss-loader options 里添加，但是只能添加-webkit-前缀。
+其实还有一种方法，可以`optimize-css-assets-webpack-plugin`和`cssnano`一起使用，如下:
+首先安装： `npm install optimize-css-assets-webpack-plugin cssnano -D`;
+```javascript
+// 优化重复样式、添加样式浏览器前缀
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+new OptimizeCssAssetsPlugin({
+    cssProcessor: require('cssnano'),
+    cssProcessorOptions: {
+        autoprefixer: {
+        add: true,
+        browsers: ['> 0%', 'ie >= 8', 'op_mini > 0', 'op_mob > 0', 'and_qq > 0', 'and_uc > 0', 'Samsung > 0']
+        },
+        postcssDiscardComments: {
+        removeAll: true
+        }
+    }
+})
+```
+webpack提供的插件非常多，更多的插件，可以看(https://webpack.js.org/plugins/)[这里]
+
+
+## 转义es6
+安装`npm i -D @babel/core @babel/plugin-transform-runtime @babel/preset-env babel-loader`
+在webpack.config.js中添加
+```javascript
+..略
+module:{
+    rulse:[
+        ...略
+        {
+            test: /\.js$/,
+            loader: 'babel-loader',
+            exclude: /node_modules/,
+        }
+    ]
+}
+```
+在根目录下，也就是和webpack.config.js同一个目录下，新增.babelrc文件
+```javascript
+{
+    "presets": ["@babel/preset-env"], 
+    "plugins": ["@babel/plugin-transform-runtime"] 
+}
+```
+
+
+## webpack-dev-server 为webpack添加静态服务器
 
 
 
@@ -213,11 +297,12 @@ module: {
 
 
 
-
-
-
+webpack4.0+vue+es6配置
+https://juejin.im/post/5c68f4e9e51d454be11473b9
 
 参考文章：
+
+https://juejin.im/post/5adf017f518825671d203520#heading-16
 
 webpack中文网
 https://www.webpackjs.com/guides/asset-management/#%E5%8A%A0%E8%BD%BD%E5%AD%97%E4%BD%93
