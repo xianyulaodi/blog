@@ -290,6 +290,76 @@ module:{
 
 
 ## webpack-dev-server 为webpack添加静态服务器
+`webpack-dev-server`为自动刷新和模块热替换机制，装上它，可以我们的改动可以自动刷新
+安装`npm install webpack-dev-server -D`
+修改一下我们的webpack.config.js
+```javascript
+var path = require('path');
+
+module.exports = {
+  //...
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'), // 服务器资源的根目录
+    compress: true, // 服务器资源采用gzip压缩
+    port: 9000,  // 运行的端口
+    overlay: true  // 出错代码是否显示在html页面上
+    hot: true //热加载
+  }
+};
+```
+再修改我们的package.json
+```json
+...
+ "scripts": {
+    "dev": "webpack-dev-server --mode development --open",
+  }
+...
+```
+执行`npm run dev`，就会自动打开浏览器，监听你的修改了
+> 注意点：`webpack-dev-server`输出的文件只存在于内存中,不输出真实的文件，也就是说，你启动它，你的dist文件其实是没有生产新的文件的
+
+
+##  resolve 设置模块如何被解析
+
+resolve是webpack自带的，主要作用是设置模块如何被解析
+主要介绍几个：
+1. resolve.alias 配置别名
+resolve.alias配置项通过别名来把原来导入路径映射成一个新的导入路径，例如：
+```javascript
+resolve: {
+    alias: {
+        compts: './src/components/'
+    }
+}
+```
+这样，我们原来`import Dialog from './src/components/dialog'`可以缩减为`import Dialog from 'compts/dialog'`;
+
+
+2. resolve.extensions 自动解析扩展，意味着我们导入模块可以省略不写后缀名
+```javascript
+resolve: {
+    extensions: ['.js', '.json']
+}
+```
+当我们import一个js时，可以不带js后缀，如`import $js from './js/test`，引入的就是test.js。
+解析过程为：当我们`import data from './data'`时，webpack就会依次寻找data.js是否存在，不存在继续寻找data.json是否存在，最后寻找data/index.js是否存在
+
+
+3. resolve.modules 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
