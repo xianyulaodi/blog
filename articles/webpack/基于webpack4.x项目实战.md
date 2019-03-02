@@ -115,7 +115,7 @@ const path = require('path');
 module.exports = {
     entry: './src/index.js',
     output: {
-        filename: 'bundle.js',
+        filename: 'main.js',
         path: path.resolve(__dirname, 'dist')
     },
     module: {
@@ -147,13 +147,6 @@ src/index.js
 ```javascript
 module: {
     rules: [
-        {
-            test: /\.css$/,
-            use: [
-                'style-loader',
-                'css-loader'
-            ]
-        },
         {
             test: /\.(png|svg|jpg|gif)$/, // 加载图片
             use: [{
@@ -240,10 +233,12 @@ module.exports = {
 
 
 #### 添加css3前缀
-利用postcss中的autoprefixer
+利用postcss中的autoprefixer来为css3自动添加前缀。
+
 安装`npm i postcss-loader autoprefixer -D `
-在根目录下新建`postcss.config.js`
-里面写入
+
+在根目录下新建`postcss.config.js`里面写入
+
 ```javascript
 module.exports = {
     plugins: [
@@ -251,7 +246,7 @@ module.exports = {
     ]
 }
 ```
-webpack.config.js里面，配置`postcss-loader`即可
+webpack.config.js里面，配置`postcss-loader`
 ```javascript
 module.exports = {
     module: {
@@ -263,6 +258,16 @@ module.exports = {
         ]
     }
 }
+```
+
+在package.json上，添加需要支持的版本
+
+```json
+"browerslist": [
+    "last 2 versions",
+    "IE 8",
+    "UCAndroid"
+  ],
 ```
 webpack提供的插件非常多，更多的插件，可以看(https://webpack.js.org/plugins/)[这里]
 
@@ -291,10 +296,11 @@ module:{
 }
 ```
 
-
 ## webpack-dev-server：为webpack添加静态服务器
 `webpack-dev-server`为自动刷新和模块热替换机制，装上它，可以我们的改动可以自动刷新
+
 安装`npm install webpack-dev-server -D`
+
 修改一下我们的webpack.config.js
 ```javascript
 var path = require('path');
@@ -326,7 +332,9 @@ module.exports = {
 
 resolve是webpack自带的，主要作用是设置模块如何被解析
 主要介绍几个：
+
 1. resolve.alias 配置别名
+
 resolve.alias配置项通过别名来把原来导入路径映射成一个新的导入路径，例如：
 ```javascript
 resolve: {
@@ -339,20 +347,21 @@ resolve: {
 
 
 2. resolve.extensions 自动解析扩展，意味着我们导入模块可以省略不写后缀名
+
 ```javascript
 resolve: {
     extensions: ['.js', '.json']
 }
 ```
-当我们import一个js时，可以不带js后缀，如`import $js from './js/test`，引入的就是test.js。
-解析过程为：假如我们用`import data from './data'`时，webpack就会依次寻找data.js是否存在，不存在继续寻找data.json是否存在，最后寻找data/index.js是否存在
-
+我们用`import data from './data'`时，webpack就会依次寻找data.js是否存在，不存在继续寻找data.json是否存在，最后寻找data/index.js是否存在
 
 3. resolve.modules 配置 Webpack 去哪些目录下寻找第三方模块
-Webpack找第三方模块，默认是只会去node_modules目录下寻找。如果你的项目中有一些模块大量被其它模块依赖和导入，由于其它模块的位置分布不定，针对不同的文件都要去计算被导入模块文件的相对路径， 这个路径有时候会很长，比如我要在node_modules下面找dialog组件，那么可能这样写：`import '../../../components/dialog'`;如果利用`resolve.modules`去优化，假如那些被大量导入的模块都在./src/components  目录下，把  modules  配置成
 
-modules:['./src/components','node_modules']
-后，你可以简单通过  `import 'dialog'`  导入。
+Webpack找第三方模块，默认是只会去`node_modules`目录下寻找。如果你的项目中，很多模块要引用这个目录下的， 那目录可能很长。打个比方，src/components/test.js要去`node_modules`下面找dialog组件，那么可能这样写：`import '../../../components/dialog'`,利用`resolve.modules`优化后：
+```javascript
+resolve.modules:['./src/components','node_modules']
+```
+你可以简单通过  `import 'dialog'`  导入。
 
 
 ## webpack实践
@@ -367,6 +376,7 @@ modules:['./src/components','node_modules']
 * 支持引用别名以及省略一些文件后缀
 
 我们目录结构如下：
+```tree
 ——src
     ├─components
     ├─css
@@ -377,8 +387,10 @@ modules:['./src/components','node_modules']
 ——package.json
 ——postcss.config.js
 ——webpack.config.js
+```
 
 webpack.config.js的配置如下：
+
 ```javascript
 const path = require('path');
 const htmlWebpackPlugin = require("html-webpack-plugin");
@@ -474,7 +486,11 @@ module.exports = {
 
 
 参考文章：
+
 https://blog.csdn.net/qq_16339527/article/details/80641245
+
 https://juejin.im/post/5aa3d2056fb9a028c36868aa
-https://juejin.im/post/5adea0106fb9a07a9d6ff6de  
+
+https://juejin.im/post/5adea0106fb9a07a9d6ff6de 
+
 https://juejin.im/post/5b304f1f51882574c72f19b0
