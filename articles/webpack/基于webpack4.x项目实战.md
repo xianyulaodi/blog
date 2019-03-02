@@ -5,7 +5,7 @@ webpack 是js模块打包器，一直在更新,本文是基于**webpack4.29.5**�
 
 ## webpack4.0的零配置
 
-安装webpack4和webpack-cli，由于webpack4中和webpack-cli抽离了，所以需要分别安装，我们全局安装一个：
+安装`webpack4`和`webpack-cli`，由于webpack4中和webpack-cli抽离了，所以需要分别安装，我们全局安装一个：
 
 `npm install webpack webpack-cli -g  `
 
@@ -34,7 +34,7 @@ You can also set it to 'none' to disable any default behavior. Learn more: https
       "build": "webpack --mode production"
    }
 ```
-development和production的区别在于一个代码没压缩，一个有压缩和优化，执行 `npm run dev`,就会生产一个`./dist/main.js`文件。
+`development`和`production`的区别在于一个代码没压缩，一个有压缩和优化，执行 `npm run dev`,就会生产一个`./dist/main.js`文件。
 
 如果我们只是想要一个简单的打包功能，使用默认配置就够用了。都不需要创建`webpack.config.js`
 
@@ -59,7 +59,7 @@ module.exports = {
 ```
 接下来，我们一点点往里面添加内容，以此更好的理解webpack
 
-#### 单入口配置
+## 单入口配置
 一些项目中，只有一个入口文件，那么，入口文件和出口文件可以这样配置
 ```javascript
 const path = require('path');
@@ -73,7 +73,7 @@ module.exports = {
 }
 ```
 
-#### 多入口配置
+## 多入口配置
 如果有多个入口，可以将entry配置成一个array或者object，如果是array，则是将多个入口文件最终生成**一个出口**文件，如果是object，则对应生成**多个文件**，如下：
 entry为array
 ```javascript
@@ -104,7 +104,7 @@ module.exports = {
 ## 添加loader
 由于webpack只能处理js，当我们需要处理其他非js文件时，我们需要引入对应的loader
 
-#### 加载css
+#### 1.加载css
 我们想从javaScript 模块中 import 一个 CSS 文件，需要在 module 配置中 安装并添加 `style-loader` 和 `css-loader`：
 
 `npm install style-loader css-loader -D`
@@ -140,7 +140,7 @@ src/index.js
 ```
 打开index.html，可以看到我们页面的背景色此时为红色。执行编译，css文件将会打包到js文件当中
 
-#### 处理图片
+#### 2.处理图片
 加载图片，也需要安装对应的loader
 `npm install file-loader url-loader -D`
 在css引入背景图片时，需要指定一下相对路径
@@ -161,7 +161,7 @@ module: {
     ]
 }
 ```
-#### 加载字体文件
+#### 3.加载字体文件
 ```javascript
 module: {
     rules: [
@@ -182,7 +182,7 @@ webpack提供了各种各样的插件，下面介绍几种常用的插件，只�
 
 使用webpack插件，我们要写在配置中的plugins里面，在使用插件之前，我们都需要先安装该插件。下面介绍几个常用的插件
 
-#### html-webpack-plugin： 创建 HTML 文件
+#### 1. html-webpack-plugin： 创建 HTML 文件
 该插件的作用为：生成html页面，自动引入js文件,自动消除src引入的缓存问题，上线之前压缩。
 
 使用前安装该插件`npm install html-webpack-plugin --save -dev`;
@@ -205,7 +205,7 @@ module: {
 ```
 关于该插件的更多使用方法，可以看[这里](https://github.com/jantimon/html-webpack-plugin#options)
 
-#### extract-text-webpack-plugin：拆分单独的css
+#### 2. extract-text-webpack-plugin：拆分单独的css
 前面安装的`css-loader`在js中引入css文件时，打包后的css是和js混合在一起的，如果我们想打包后的css文件时单独的存在，需要引入这个插件。
 
 安装`npm i extract-text-webpack-plugin@next -D`，其中@next表示可以在webpack4中使用
@@ -232,7 +232,7 @@ module.exports = {
 关于该插件的更多使用方法，可以看[这里](https://www.webpackjs.com/plugins/extract-text-webpack-plugin/)
 
 
-#### 添加css3前缀
+#### 3.添加css3前缀
 利用postcss中的autoprefixer来为css3自动添加前缀。
 
 安装`npm i postcss-loader autoprefixer -D `
@@ -269,7 +269,7 @@ module.exports = {
     "UCAndroid"
   ],
 ```
-webpack提供的插件非常多，更多的插件，可以看(https://webpack.js.org/plugins/)[这里]
+webpack提供的插件非常多，更多的插件，可以看[https://webpack.js.org/plugins/](这里)
 
 
 ## 转义es6
@@ -328,12 +328,12 @@ module.exports = {
 > 注意点：`webpack-dev-server`输出的文件只存在于内存中,不输出真实的文件，也就是说，你启动它，你的dist文件其实是没有生产新的文件的
 
 
-##  resolve 设置模块如何被解析
+##  resolve: 设置模块如何被解析
 
 resolve是webpack自带的，主要作用是设置模块如何被解析
 主要介绍几个：
 
-1. resolve.alias 配置别名
+#### 1. resolve.alias 配置别名
 
 resolve.alias配置项通过别名来把原来导入路径映射成一个新的导入路径，例如：
 ```javascript
@@ -346,7 +346,7 @@ resolve: {
 这样，我们原来`import Dialog from './src/components/dialog'`可以缩减为`import Dialog from 'components/dialog'`;
 
 
-2. resolve.extensions 自动解析扩展，意味着我们导入模块可以省略不写后缀名
+#### 2. resolve.extensions 自动解析扩展，意味着我们导入模块可以省略不写后缀名
 
 ```javascript
 resolve: {
@@ -355,7 +355,7 @@ resolve: {
 ```
 我们用`import data from './data'`时，webpack就会依次寻找data.js是否存在，不存在继续寻找data.json是否存在，最后寻找data/index.js是否存在
 
-3. resolve.modules 配置 Webpack 去哪些目录下寻找第三方模块
+#### 3. resolve.modules 配置 Webpack 去哪些目录下寻找第三方模块
 
 Webpack找第三方模块，默认是只会去`node_modules`目录下寻找。如果你的项目中，很多模块要引用这个目录下的， 那目录可能很长。打个比方，src/components/test.js要去`node_modules`下面找dialog组件，那么可能这样写：`import '../../../components/dialog'`,利用`resolve.modules`优化后：
 ```javascript
@@ -477,20 +477,19 @@ module.exports = {
     },
 };
 ```
-代码地址: https://github.com/xianyulaodi/demos/tree/master/webpack/webpack-basic
+代码地址: [这里](https://github.com/xianyulaodi/demos/tree/master/webpack/webpack-basic)
 
 ## 后记
 目前vue、react都有自己的webpack配置，都已经配好了，直接拿来用即可。不过作为一个优秀的前端，我们也需要知道如何从零开始配置属于自己的webpack.config.js。 后续写一个只需配置一次，可以多个项目公共的webpack配置，敬请期待...
 
 
-
+<br />
+<br />
+<br />
 
 参考文章：
 
 https://blog.csdn.net/qq_16339527/article/details/80641245
-
 https://juejin.im/post/5aa3d2056fb9a028c36868aa
-
 https://juejin.im/post/5adea0106fb9a07a9d6ff6de 
-
 https://juejin.im/post/5b304f1f51882574c72f19b0
